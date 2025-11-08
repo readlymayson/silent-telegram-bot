@@ -1,0 +1,31 @@
+services:
+  telegram-bot:
+    build: .
+    container_name: silent-telegram-bot
+    restart: unless-stopped
+    volumes:
+      # Монтируем конфигурацию
+      - ./config:/app/config:ro
+      # Монтируем базу данных
+      - ./data:/app/data
+      # Монтируем логи
+      - ./logs:/app/logs
+      # Монтируем отдельный файл сессии для user_bot
+      - ./user_bot_session.session:/app/user_bot_session.session
+    user: "1000:1000"
+    environment:
+      - PYTHONUNBUFFERED=1
+    env_file:
+      - .env
+    networks:
+      - bot-network
+
+networks:
+  bot-network:
+    driver: bridge
+
+volumes:
+  data:
+    driver: local
+  logs:
+    driver: local
